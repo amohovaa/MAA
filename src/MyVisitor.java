@@ -139,11 +139,11 @@ public class MyVisitor extends MAABaseVisitor<Object> {
     }
 
 
-    @Override
+    /*@Override
     public String visitFactor (MAAParser.FactorContext ctx){
         if (ctx.ident()!= null) return ctx.ident().STRING().getText();
         return ctx.getText();
-    }
+    }*/
 
     @Override
     public String visitWritestmt(MAAParser.WritestmtContext ctx) {
