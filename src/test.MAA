@@ -1,16 +1,10 @@
-VAR x, squ;
-
-PROCEDURE square;
-BEGIN
-   squ:= x * x
-END;
+VAR int x = 1;
+VAR int squ = 3;
 
 BEGIN
+
    x := 1;
-   WHILE x <= 10 DO
-   BEGIN
-      CALL square;
-      ! squ;
-      x := x + 1
-   END
+   squ := 2;
+   x := x + squ;
+
 END.

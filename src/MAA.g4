@@ -5,17 +5,22 @@ program
    ;
 
 block
-   : consts? vars? procedure* statement
+   : consts? (vars*)? (procedure*)? statement
    ;
 
 consts
-   : CONST ident '=' (INTEGER | FLOAT) (',' ident '=' (INTEGER | FLOAT))* ';'
+   : CONST vars   (';' 'const' vars) * ';'
    ;
 
 vars
-   : VAR ident ('=' (INTEGER | FLOAT))? (',' ident ('=' (INTEGER | FLOAT))?)* ';'
+   : VAR type ident ('=' expression)? ';'
    ;
 
+type
+    : 'int'
+    | 'float'
+    | 'char'
+    ;
 procedure
    : PROCEDURE ident ';' block ';'
    ;
@@ -33,8 +38,12 @@ callstmt
    ;
 
 writestmt
-   : WRITE ident
+   : WRITE '(' expressionunion ')'
    ;
+
+expressionunion
+    :   (expression(',' expression)*)?
+    ;
 
 bangstmt
    : '!' expression
@@ -66,20 +75,38 @@ condition
    ;
 
 expression
-   : ('+' | '-')? term (('+' | '-') term)*
+   :
+    factor #FactorExpr
+   |expression op=('+' | '-') expression # SummExpr
+   |expression op=('*' | '/') expression # MultExpr
    ;
 
-term
-   : factor (('*' | '/') factor)*
-   ;
 
 factor
    : ident
    | number
-   | INTEGER
-   | FLOAT
-   | '(' expression ')'
+   | literal
+   | '(' factor ')'
+   | assignstmt
    ;
+
+literal
+	:	integerLiteral
+	|	floatLiteral
+	|   charLiteral
+	;
+
+integerLiteral
+    :   NUMBER
+    ;
+
+floatLiteral
+    :  NUMBER '.' NUMBER*
+    ;
+
+charLiteral
+    :  '\'' STRING '\''
+    ;
 
 ident
    : STRING
@@ -156,16 +183,6 @@ VAR
 PROCEDURE
    : 'PROCEDURE'
    ;
-
-
-FLOAT
-	: '-'? NUMBER'.'NUMBER
-	;
-
-
-INTEGER
-	: '-'? NUMBER
-	;
 
 
 STRING

@@ -47,6 +47,16 @@ public interface MAAListener extends ParseTreeListener {
 	 */
 	void exitVars(MAAParser.VarsContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link MAAParser#type}.
+	 * @param ctx the parse tree
+	 */
+	void enterType(MAAParser.TypeContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MAAParser#type}.
+	 * @param ctx the parse tree
+	 */
+	void exitType(MAAParser.TypeContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link MAAParser#procedure}.
 	 * @param ctx the parse tree
 	 */
@@ -96,6 +106,16 @@ public interface MAAListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitWritestmt(MAAParser.WritestmtContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MAAParser#expressionunion}.
+	 * @param ctx the parse tree
+	 */
+	void enterExpressionunion(MAAParser.ExpressionunionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MAAParser#expressionunion}.
+	 * @param ctx the parse tree
+	 */
+	void exitExpressionunion(MAAParser.ExpressionunionContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link MAAParser#bangstmt}.
 	 * @param ctx the parse tree
@@ -167,25 +187,41 @@ public interface MAAListener extends ParseTreeListener {
 	 */
 	void exitCondition(MAAParser.ConditionContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link MAAParser#expression}.
+	 * Enter a parse tree produced by the {@code MultExpr}
+	 * labeled alternative in {@link MAAParser#expression}.
 	 * @param ctx the parse tree
 	 */
-	void enterExpression(MAAParser.ExpressionContext ctx);
+	void enterMultExpr(MAAParser.MultExprContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link MAAParser#expression}.
+	 * Exit a parse tree produced by the {@code MultExpr}
+	 * labeled alternative in {@link MAAParser#expression}.
 	 * @param ctx the parse tree
 	 */
-	void exitExpression(MAAParser.ExpressionContext ctx);
+	void exitMultExpr(MAAParser.MultExprContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link MAAParser#term}.
+	 * Enter a parse tree produced by the {@code SummExpr}
+	 * labeled alternative in {@link MAAParser#expression}.
 	 * @param ctx the parse tree
 	 */
-	void enterTerm(MAAParser.TermContext ctx);
+	void enterSummExpr(MAAParser.SummExprContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link MAAParser#term}.
+	 * Exit a parse tree produced by the {@code SummExpr}
+	 * labeled alternative in {@link MAAParser#expression}.
 	 * @param ctx the parse tree
 	 */
-	void exitTerm(MAAParser.TermContext ctx);
+	void exitSummExpr(MAAParser.SummExprContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code FactorExpr}
+	 * labeled alternative in {@link MAAParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterFactorExpr(MAAParser.FactorExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code FactorExpr}
+	 * labeled alternative in {@link MAAParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitFactorExpr(MAAParser.FactorExprContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link MAAParser#factor}.
 	 * @param ctx the parse tree
@@ -196,6 +232,46 @@ public interface MAAListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitFactor(MAAParser.FactorContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MAAParser#literal}.
+	 * @param ctx the parse tree
+	 */
+	void enterLiteral(MAAParser.LiteralContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MAAParser#literal}.
+	 * @param ctx the parse tree
+	 */
+	void exitLiteral(MAAParser.LiteralContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MAAParser#integerLiteral}.
+	 * @param ctx the parse tree
+	 */
+	void enterIntegerLiteral(MAAParser.IntegerLiteralContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MAAParser#integerLiteral}.
+	 * @param ctx the parse tree
+	 */
+	void exitIntegerLiteral(MAAParser.IntegerLiteralContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MAAParser#floatLiteral}.
+	 * @param ctx the parse tree
+	 */
+	void enterFloatLiteral(MAAParser.FloatLiteralContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MAAParser#floatLiteral}.
+	 * @param ctx the parse tree
+	 */
+	void exitFloatLiteral(MAAParser.FloatLiteralContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MAAParser#charLiteral}.
+	 * @param ctx the parse tree
+	 */
+	void enterCharLiteral(MAAParser.CharLiteralContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MAAParser#charLiteral}.
+	 * @param ctx the parse tree
+	 */
+	void exitCharLiteral(MAAParser.CharLiteralContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link MAAParser#ident}.
 	 * @param ctx the parse tree

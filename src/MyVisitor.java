@@ -1,5 +1,5 @@
-import MAABaseVisitor;
-import MAAParser;
+//import MAA.MAABaseVisitor;
+//import MAA.MAAParser;
 import java.util.HashMap;
 import java.util.Stack;
 import java.lang.Override;
@@ -11,10 +11,12 @@ public class MyVisitor extends MAABaseVisitor<Object> {
     Stack<HashMap<String, Object>> tables = new Stack<>();
     Stack<HashMap<String, Object>> currentStack;
     HashMap<String, Object> currentTable;
+    HashMap<String, MAAParser.BlockContext> function = new HashMap<>();
 
     private Object getVariable(String ident) throws Exception {
-        if (currentTable.containsKey(ident))
-            return currentTable.get(ident);
+        if (currentTable.containsKey(ident)) {
+            System.out.println("ident" + currentTable.get(ident));
+            return currentTable.get(ident);}
         for (HashMap<String, Object> hm : currentStack) {
             if (hm.containsKey(ident)) {
                 return hm.get(ident);
@@ -26,53 +28,54 @@ public class MyVisitor extends MAABaseVisitor<Object> {
 
         throw new Exception("No such variable in the table");
     }
-    //@Override
-    //public String visitIfstmt(MAAParser.IfstmtContext ctx) {
-    //    System.out.println("begin if :");
-    //    String conclusionResult = (String)visit(ctx.conditionunion());
-    //    if (conclusionResult.equals("true")) {
-    //        currentStack.push(currentTable);
-    //        visit(ctx.block(0));
-    //        currentTable = currentStack.pop();
-    //    }
-    //    return null;
-    //}
-
-    //public String visitConditionunion(kidParser.ConditionunionContext ctx) {
-    //    for (int i = 0; i < ctx.condition().size(); i++) {
-    //        String result = (String) visitChildren(ctx);
-    //        if (result == null) {
-    //            System.err.println("Conclusion NULL exception");
-    //            //  System.exit(1);
-    //        }
-    //        if (result.equals("false")) return "false";
-    //    }
-    //    return "true";
-    //}
-
-//    @Override
-//    public String  visitCondition(MAAParser.ConditionContext ctx) {
-//        return null;
-//    }
-
-//    @Override
-//    public String visitSummExpression(MAAParser.SummExpressionContext ctx) {
-//        Object left = new Object(visit(ctx.getChild()));
-//        String right = new String(visit(ctx);
-//        switch (ctx.term().toString()) {
-//            case "+":
-//                return String.valueOf(left + right);
-//
-//            case "-": {
-//                return String.valueOf(left - right);
-//            }
-//
-//        }
-//    }
 
     @Override public String  visitConsts(MAAParser.ConstsContext ctx) {
         currentTable = consts;
         visitChildren(ctx);
+        return null;
+    }
+
+    @Override
+    public Object visitVars (MAAParser.VarsContext ctx){
+        String varName = ctx.ident().getText();
+        String type = ctx.type().getText();
+        Object value = visit(ctx.expression());
+        if (ctx.children.contains(ctx.expression()))
+            value = visit(ctx.expression());
+        currentTable.put(varName, value);
+        if (value != null)
+            System.out.println("Vars: " + type + " " + varName + " " + value.toString());
+        else
+            System.out.println("VarDeclaration (no value): " + type + " " + varName + " as NULL");
+
+        currentTable.put(varName, value);
+
+        return null;
+    }
+
+
+    @Override
+    public Object visitProcedure(MAAParser.ProcedureContext ctx) {
+        String ident = ctx.ident().getText();
+        function.put(ident, ctx.block());
+        return null;
+    }
+
+    private void callProcedure(String ident) throws Exception{
+        if (function.containsKey(ident)) {
+            visit(function.get(ident));
+        }
+        else throw new Exception("Procedure" + ident + " is not identified");
+    }
+
+    @Override
+    public Object visitCallstmt(MAAParser.CallstmtContext ctx) {
+        try {
+            callProcedure(ctx.ident().getText());
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
         return null;
     }
 
@@ -98,60 +101,20 @@ public class MyVisitor extends MAABaseVisitor<Object> {
         return (String) visitChildren(ctx);
     }
 
-    //    @Override Object visitFunctions(MAAParser.FunctionsContext ctx)
-//    {
-//
-//    }
     @Override
-    public Object visitVars (MAAParser.VarsContext ctx){
-        String varName = ctx.ident().getText();
-        String type = ctx.type().getText();
-        Object value = visit(ctx.expression());
-        if (ctx.children.contains(ctx.expression()))
-            value = visit(ctx.expression());
-        currentTable.put(varName, value);
-        if (value != null)
-            System.out.println("Vars: " + type + " " + varName + " " + value.toString());
-        else
-            System.out.println("VarDeclaration (no value): " + type + " " + varName + " as NULL");
-
-        currentTable.put(varName, value);
-
-        return null;
+    public String visitExpressionunion(MAAParser.ExpressionunionContext ctx) {
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < ctx.expression().size(); i++) {
+            result.append(visit(ctx.expression(i)));
+            result.append(" ");
+        }
+        return result.toString();
     }
-    //@Override
-    //public String visitExpressionunion(MAAParser.ExpressionunionContext ctx) {
-    //StringBuilder result = new StringBuilder();
-    //for (int i = 0; i < ctx.expression().size(); i ++) {
-    //result.append(visit(ctx.expression(i)));
-    //result.append(" ");
-    // }
-    //return result.toString();
-    //}
-    //@Override
-////    public String visitWritestmt(MAAParser.WritestmtContext ctx) {
-////       // ArrayList<Object> expList = (ArrayList<Object>) visit(ctx.expressionunion());
-////       // String expList=ctx.getText();
-////    String write =  visit(ctx.expressionunion());
-////    System.out.println("write( " + write + ")");
-////    return null;
-////}
-    @Override
-    public String visitWritestmt(MAAParser.WritestmtContext ctx) {
-        String toPrint = (String) visit(ctx.expressionunion());
-        System.out.println("write( " + toPrint + ")");
-        return null;
-    }
-    //        String toPrint = "";
-//        for (Object e : expList){
-//            toPrint += e.toString() + " ";
-//        }
-//        System.out.println("write( " + toPrint + ")");
-//        return null;
-//    }
+
     @Override
     public Object visitIdent (MAAParser.IdentContext ctx) {
         try {
+            System.out.println("!!!!" + ctx.getText());
             System.out.println("GetVariable:" + ctx.getText() + " is: " + getVariable(ctx.getText()));
             return getVariable(ctx.getText());
         } catch (Exception e) {
@@ -159,14 +122,15 @@ public class MyVisitor extends MAABaseVisitor<Object> {
         }
         return null;
     }
+
     @Override
     public String  visitAssignstmt(MAAParser.AssignstmtContext ctx) {
         try {
             String varName = ctx.ident().getText();
-            Object exp = (Object) visit(ctx.expression());
+            Object exp = visit(ctx.expression());
 
             currentTable.put(varName, exp);
-            System.out.println("Assigment: " + varName + " " + exp);
+            System.out.println("Assigment: " + varName + " = " + exp);
         } catch (Exception e) {
             System.out.println("!!!Error!!!");
             System.out.println(e.fillInStackTrace());
@@ -182,21 +146,96 @@ public class MyVisitor extends MAABaseVisitor<Object> {
     }
 
     @Override
-    public Object visitFLOAT (MAAParser.FLOAT ctx){
+    public String visitWritestmt(MAAParser.WritestmtContext ctx) {
+        String toPrint = (String) visit(ctx.expressionunion());
+        //toPrint +=(String)visit(ctx.expressionunion());
+
+        System.out.println("write( " + toPrint + ")");
+        return null;
+    }
+
+    @Override
+    public String visitSummExpr(MAAParser.SummExprContext ctx) {
+        Object left = visit(ctx.expression(0));
+        String sub = ".";
+        Object right;
+        float summf = 0;
+        float differf = 0;
+        int summi = 0;
+        int differi = 0;
+        boolean flag = false;
+        // Object left = ctx.expression(0).getText();
+        if (ctx.expression(1) != null) {
+            right = visit(ctx.expression(1));
+        } else {
+            right = new String("0");
+        }
+        String sl = left.toString();
+        String sr = right.toString();
+        //System.out.println(sl+" +++++"+sr);
+        if (sl.indexOf(sub) != -1 || sr.indexOf(sub) != -1) {
+            //  System.out.println(sl+" +++++"+sr);
+            flag = true;
+            float leftfloat = Float.parseFloat(left.toString());
+            float rightfloat = Float.parseFloat(right.toString());
+            summf = leftfloat + rightfloat;
+            differf = leftfloat - rightfloat;
+            //delwithpointf = leftfloat % rightfloat;
+            //System.out.println("float0 "+ delwithpointf+"  "+leftfloat+" % "+rightfloat);
+
+        } else {
+            //System.out.println(sl+" ----------"+sr);
+            flag = false;
+            int leftint = Integer.parseInt(left.toString());
+            int rightint = Integer.parseInt(right.toString());
+            summi = leftint + rightint;
+            differi = leftint - rightint;
+            //delwithpointi = leftint%rightint;
+            //System.out.println("int0 "+ delwithpointi);
+        }
+        //System.out.println(left+"  "+right);
+//        int leftint=Integer.parseInt(left.toString());
+//        int rightint=Integer.parseInt(right.toString());
+//        int summ=leftint+rightint;
+//        int razn=leftint-rightint;
+        // System.out.println(leftint+"  "+rightint+" = "+summ);
+        // System.out.println(ctx.expression(0).getText()+" CTX");
+        //System.out.println(ctx.op.getText()+" CTX");
+        switch (ctx.op.getText()) {
+            case "+":
+                //  System.out.println(sl+" *"+sr);
+                //currentTable.put(, exp);
+                if (flag == true)
+                    return String.valueOf(summf);
+                else
+                    return String.valueOf(summi);
+            case "-": {
+                //System.out.println(sl+" /"+sr);
+                if (flag == true)
+                    //currentTable.put(VarName, exp);
+                    return String.valueOf(differf);
+                else
+                    return String.valueOf(differi);
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public String visitLiteral (MAAParser.LiteralContext ctx){
+        if (ctx.charLiteral()!= null) return ctx.charLiteral().STRING().getText();
+        return ctx.getText();
+    }
+
+    @Override
+    public Object visitFloatLiteral(MAAParser.FloatLiteralContext ctx){
         System.out.println("Float: " + ctx.getText());
         return Float.parseFloat(ctx.getText());
     }
 
     @Override
-    public Object visitINTEGER (MAAParser.INTEGER ctx){
+    public Object visitIntegerLiteral (MAAParser.IntegerLiteralContext ctx){
         System.out.println("Integer: " + ctx.getText());
         return Integer.parseInt(ctx.getText());
     }
-
-
-    //@Override
-    //public Object visitIdent (MAAParser.IdentContext ctx){
-    //    System.out.println("Char: " + ctx.getText());
-    //    return new Character(ctx.STRING().getText().charAt(0));
-    //}
 }

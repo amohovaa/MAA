@@ -34,6 +34,12 @@ public interface MAAVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitVars(MAAParser.VarsContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link MAAParser#type}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitType(MAAParser.TypeContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link MAAParser#procedure}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -63,6 +69,12 @@ public interface MAAVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitWritestmt(MAAParser.WritestmtContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MAAParser#expressionunion}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitExpressionunion(MAAParser.ExpressionunionContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link MAAParser#bangstmt}.
 	 * @param ctx the parse tree
@@ -106,23 +118,56 @@ public interface MAAVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitCondition(MAAParser.ConditionContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link MAAParser#expression}.
+	 * Visit a parse tree produced by the {@code MultExpr}
+	 * labeled alternative in {@link MAAParser#expression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitExpression(MAAParser.ExpressionContext ctx);
+	T visitMultExpr(MAAParser.MultExprContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link MAAParser#term}.
+	 * Visit a parse tree produced by the {@code SummExpr}
+	 * labeled alternative in {@link MAAParser#expression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitTerm(MAAParser.TermContext ctx);
+	T visitSummExpr(MAAParser.SummExprContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code FactorExpr}
+	 * labeled alternative in {@link MAAParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFactorExpr(MAAParser.FactorExprContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link MAAParser#factor}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitFactor(MAAParser.FactorContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MAAParser#literal}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitLiteral(MAAParser.LiteralContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MAAParser#integerLiteral}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIntegerLiteral(MAAParser.IntegerLiteralContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MAAParser#floatLiteral}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFloatLiteral(MAAParser.FloatLiteralContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MAAParser#charLiteral}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCharLiteral(MAAParser.CharLiteralContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link MAAParser#ident}.
 	 * @param ctx the parse tree
