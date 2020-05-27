@@ -1,6 +1,8 @@
-VAR float x = 3.0;
-VAR float y = 3.0;
+VAR int x = 3;
+VAR int y = 3;
+
 BEGIN
-y:=x+x;
-y := x - 2.0 + x;
+    y := x + x;
+    y := x - 2 + x;
+    y := x / 3;
 END.

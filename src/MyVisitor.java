@@ -1,5 +1,3 @@
-//import MAA.MAABaseVisitor;
-//import MAA.MAAParser;
 import java.util.HashMap;
 import java.util.Stack;
 import java.lang.Override;
@@ -15,7 +13,6 @@ public class MyVisitor extends MAABaseVisitor<Object> {
 
     private Object getVariable(String ident) throws Exception {
         if (currentTable.containsKey(ident)) {
-            System.out.println("ident" + currentTable.get(ident));
             return currentTable.get(ident);}
         for (HashMap<String, Object> hm : currentStack) {
             if (hm.containsKey(ident)) {
@@ -114,7 +111,6 @@ public class MyVisitor extends MAABaseVisitor<Object> {
     @Override
     public Object visitIdent (MAAParser.IdentContext ctx) {
         try {
-            System.out.println("!!!!" + ctx.getText());
             System.out.println("GetVariable:" + ctx.getText() + " is: " + getVariable(ctx.getText()));
             return getVariable(ctx.getText());
         } catch (Exception e) {
@@ -139,11 +135,11 @@ public class MyVisitor extends MAABaseVisitor<Object> {
     }
 
 
-    /*@Override
-    public String visitFactor (MAAParser.FactorContext ctx){
-        if (ctx.ident()!= null) return ctx.ident().STRING().getText();
+    @Override
+    public String visitFactor (MAAParser.FactorContext ctx){ ;
+        if (ctx.ident()!= null) return (String) visitChildren(ctx);
         return ctx.getText();
-    }*/
+    }
 
     @Override
     public String visitWritestmt(MAAParser.WritestmtContext ctx) {
@@ -157,65 +153,99 @@ public class MyVisitor extends MAABaseVisitor<Object> {
     @Override
     public String visitSummExpr(MAAParser.SummExprContext ctx) {
         Object left = visit(ctx.expression(0));
-        String sub = ".";
         Object right;
+        String sub = ".";
+
         float summf = 0;
         float differf = 0;
         int summi = 0;
         int differi = 0;
         boolean flag = false;
-        // Object left = ctx.expression(0).getText();
+
         if (ctx.expression(1) != null) {
             right = visit(ctx.expression(1));
         } else {
             right = new String("0");
         }
+
         String sl = left.toString();
         String sr = right.toString();
-        //System.out.println(sl+" +++++"+sr);
         if (sl.indexOf(sub) != -1 || sr.indexOf(sub) != -1) {
-            //  System.out.println(sl+" +++++"+sr);
             flag = true;
             float leftfloat = Float.parseFloat(left.toString());
             float rightfloat = Float.parseFloat(right.toString());
             summf = leftfloat + rightfloat;
             differf = leftfloat - rightfloat;
-            //delwithpointf = leftfloat % rightfloat;
-            //System.out.println("float0 "+ delwithpointf+"  "+leftfloat+" % "+rightfloat);
-
         } else {
-            //System.out.println(sl+" ----------"+sr);
             flag = false;
             int leftint = Integer.parseInt(left.toString());
             int rightint = Integer.parseInt(right.toString());
             summi = leftint + rightint;
             differi = leftint - rightint;
-            //delwithpointi = leftint%rightint;
-            //System.out.println("int0 "+ delwithpointi);
         }
-        //System.out.println(left+"  "+right);
-//        int leftint=Integer.parseInt(left.toString());
-//        int rightint=Integer.parseInt(right.toString());
-//        int summ=leftint+rightint;
-//        int razn=leftint-rightint;
-        // System.out.println(leftint+"  "+rightint+" = "+summ);
-        // System.out.println(ctx.expression(0).getText()+" CTX");
-        //System.out.println(ctx.op.getText()+" CTX");
         switch (ctx.op.getText()) {
             case "+":
-                //  System.out.println(sl+" *"+sr);
-                //currentTable.put(, exp);
                 if (flag == true)
                     return String.valueOf(summf);
                 else
                     return String.valueOf(summi);
             case "-": {
-                //System.out.println(sl+" /"+sr);
                 if (flag == true)
-                    //currentTable.put(VarName, exp);
                     return String.valueOf(differf);
                 else
                     return String.valueOf(differi);
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public String visitMultExpr(MAAParser.MultExprContext ctx) {
+        Object left = visit(ctx.expression(0));
+        Object right;
+        String sub = ".";
+
+        float delf = 0;
+        float multf = 0;
+        int deli = 0;
+        int multi = 0;
+        boolean flag = false;
+
+        if (ctx.expression(1) != null) {
+            right = visit(ctx.expression(1));
+        } else {
+            right = new String("0");
+        }
+
+        String sl = left.toString();
+        String sr = right.toString();
+        if (sl.indexOf(sub) != -1 || sr.indexOf(sub)!=-1)
+        {
+            flag = true;
+            float leftfloat = Float.parseFloat(left.toString());
+            float  rightfloat = Float.parseFloat(right.toString());
+            delf = leftfloat / rightfloat;
+            multf = leftfloat * rightfloat;
+        }
+        else {
+
+            flag = false;
+            int leftint = Integer.parseInt(left.toString());
+            int rightint = Integer.parseInt(right.toString());
+            deli = leftint / rightint;
+            multi = leftint * rightint;
+        }
+        switch (ctx.op.getText()) {
+            case "*":
+                if(flag==true)
+                    return String.valueOf(multf);
+                else
+                    return String.valueOf(multi);
+            case "/": {
+                if (flag == true)
+                    return String.valueOf(delf);
+                else
+                    return String.valueOf(deli);
             }
         }
         return null;
