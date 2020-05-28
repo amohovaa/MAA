@@ -50,17 +50,119 @@ public class MyVisitor extends MAABaseVisitor<Object> {
         return null;
     }
 
+    @Override
+    public String visitIfstmt(MAAParser.IfstmtContext ctx) {
+        System.out.println("IF: ");
+        Object conditionResult = visit(ctx.conditionunion());
+        if (conditionResult.equals("true")) {
+            visit(ctx.statement(0));
+            visitChildren(ctx);
+        }
+        return null;
+    }
 
     @Override
+    public String visitConditionunion(MAAParser.ConditionunionContext ctx) {
+        for (int i = 0; i < ctx.condition().size(); i++) {
+            Object result = visitChildren(ctx);
+            if (result == null) {
+                System.err.println("Condition NULL exception");
+                System.exit(1);
+            }
+            if (result.equals("false")) return "false";
+        }
+        return "true";
+    }
+
+    @Override
+    public String visitComparison(MAAParser.ComparisonContext ctx) {
+        Object left = visit(ctx.expression(0));
+        Object right = visit(ctx.expression(1));
+        String sub = ".";
+        boolean flag = false;
+
+        String sl = left.toString();
+        String sr = right.toString();
+        if (sl.indexOf(sub) != -1 || sr.indexOf(sub) != -1) flag = true;
+        else flag = false;
+
+        switch (ctx.op.getText()) {
+            case "=":
+                if (flag == true) {
+                    if (Float.parseFloat(left.toString()) == Float.parseFloat(right.toString()))
+                        return "true";
+                    else return "false";
+                } else {
+                    if (Integer.parseInt(left.toString()) == Integer.parseInt(right.toString()))
+                        return "true";
+                    else return "false";
+                }
+
+            case "!=":
+                if (flag == true) {
+                    if (Float.parseFloat(left.toString()) != Float.parseFloat(right.toString()))
+                        return "true";
+                    else return "false";
+                } else {
+                    if (Integer.parseInt(left.toString()) != Integer.parseInt(right.toString()))
+                        return "true";
+                    else return "false";
+                }
+            case "<":
+                if (flag == true) {
+                    if (Float.parseFloat(left.toString()) < Float.parseFloat(right.toString()))
+                        return "true";
+                    else return "false";
+                } else {
+                    if (Integer.parseInt(left.toString()) < Integer.parseInt(right.toString()))
+                        return "true";
+                    else return "false";
+                }
+            case "<=":
+                if (flag == true) {
+                    if (Float.parseFloat(left.toString()) <= Float.parseFloat(right.toString()))
+                        return "true";
+                    else return "false";
+                } else {
+                    if (Integer.parseInt(left.toString()) <= Integer.parseInt(right.toString()))
+                        return "true";
+                    else return "false";
+                }
+            case ">":
+                if (flag == true) {
+                    if (Float.parseFloat(left.toString()) > Float.parseFloat(right.toString()))
+                        return "true";
+                    else return "false";
+                } else {
+                    if (Integer.parseInt(left.toString()) > Integer.parseInt(right.toString()))
+                        return "true";
+                    else return "false";
+                }
+            case ">=":
+                if (flag == true) {
+                    if (Float.parseFloat(left.toString()) >= Float.parseFloat(right.toString()))
+                        return "true";
+                    else return "false";
+                } else {
+                    if (Integer.parseInt(left.toString()) >= Integer.parseInt(right.toString()))
+                        return "true";
+                    else return "false";
+                }
+        }
+        return null;
+
+    }
+    /*@Override
     public Object visitProcedure(MAAParser.ProcedureContext ctx) {
         String ident = ctx.ident().getText();
-        function.put(ident, ctx.block());
+        currentTable.put(ident, ctx.block());
+        visit(ctx.block());
         return null;
     }
 
     private void callProcedure(String ident) throws Exception{
-        if (function.containsKey(ident)) {
-            visit(function.get(ident));
+        if (currentTable.containsKey(ident)) {
+            visit(currentTable.get(ident));
         }
         else throw new Exception("Procedure" + ident + " is not identified");
     }
@@ -74,7 +176,7 @@ public class MyVisitor extends MAABaseVisitor<Object> {
             e.printStackTrace();
         }
         return null;
-    }
+    }*/
 
     @Override
     public String visitProgram (MAAParser.ProgramContext ctx)
@@ -83,13 +185,12 @@ public class MyVisitor extends MAABaseVisitor<Object> {
         return null;
     }
 
+
     @Override
     public String visitBlock (MAAParser.BlockContext ctx){
         HashMap<String, Object> currentBlocktable = new HashMap<>();
         currentTable = currentBlocktable;
         visitChildren(ctx);
-        //tables.add(currentBlocktable);
-
         return null;
     }
 
@@ -144,9 +245,7 @@ public class MyVisitor extends MAABaseVisitor<Object> {
     @Override
     public String visitWritestmt(MAAParser.WritestmtContext ctx) {
         String toPrint = (String) visit(ctx.expressionunion());
-        //toPrint +=(String)visit(ctx.expressionunion());
-
-        System.out.println("write( " + toPrint + ")");
+        System.out.println("WRITE ( " + toPrint + " )");
         return null;
     }
 

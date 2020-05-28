@@ -54,7 +54,7 @@ beginstmt
    ;
 
 ifstmt
-   : IF condition THEN statement
+   : IF conditionunion THEN statement (';' statement)* END
    ;
 
 whilestmt
@@ -70,8 +70,12 @@ continuestmt
 	;
 
 condition
-   : ODD expression
-   | expression ('=' | '!=' | '<' | '<=' | '>' | '>=') expression
+   : expression # ExprCond
+   | expression op=('=' | '!=' | '<' | '<=' | '>' | '>=') expression # Comparison
+   ;
+
+conditionunion
+   : condition (opp=('and'|'or')condition)*
    ;
 
 expression

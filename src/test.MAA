@@ -1,8 +1,12 @@
-VAR int x = 3;
-VAR int y = 3;
-
+VAR int x = 1;
+VAR int squ = 2;
 BEGIN
-    y := x + x;
-    y := x - 2 + x;
-    y := x / 3;
+   IF x >= squ THEN
+     squ := x * 5;
+     x := 6;
+     squ := squ * x;
+     WRITE(squ);
+   END;
+   x := squ * 2;
+   WRITE (x);
 END.
