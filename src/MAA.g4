@@ -54,7 +54,7 @@ beginstmt
    ;
 
 ifstmt
-   : IF conditionunion THEN statement (';' statement)* END
+   : IF conditionunion THEN BEGIN statement (';' statement)* END
    ;
 
 whilestmt
@@ -75,7 +75,7 @@ condition
    ;
 
 conditionunion
-   : condition (opp=('and'|'or')condition)*
+   : condition (opp=('AND'|'OR')condition)*
    ;
 
 expression
