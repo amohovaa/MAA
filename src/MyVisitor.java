@@ -62,6 +62,18 @@ public class MyVisitor extends MAABaseVisitor<Object> {
     }
 
     @Override
+    public String visitWhilestmt(MAAParser.WhilestmtContext ctx) {
+        System.out.println("WHILE: ");
+        Object conditionResult = visit(ctx.conditionunion());
+        while (conditionResult.equals("true")) {
+            for (int i = 0; i < ctx.statement().size(); i++)
+                visit(ctx.statement(i));
+            conditionResult = visit(ctx.conditionunion());
+            }
+        return null;
+    }
+
+    @Override
     public String visitConditionunion(MAAParser.ConditionunionContext ctx) {
         for (int i = 0; i < ctx.condition().size(); i++) {
             Object result = visitChildren(ctx);
@@ -152,9 +164,11 @@ public class MyVisitor extends MAABaseVisitor<Object> {
         return null;
 
     }
+
     /*@Override
     public Object visitProcedure(MAAParser.ProcedureContext ctx) {
         String ident = ctx.ident().getText();
+        System.out.println("ident" + ident);
         currentTable.put(ident, ctx.block());
         visit(ctx.block());
         return null;
@@ -196,7 +210,7 @@ public class MyVisitor extends MAABaseVisitor<Object> {
 
     @Override
     public String visitStatement (MAAParser.StatementContext ctx){
-        return (String) visitChildren(ctx);
+        return (String)visitChildren(ctx);
     }
 
     @Override

@@ -1,5 +1,6 @@
 VAR int x = 1;
 VAR int squ = 2;
+
 BEGIN
    IF x <= squ AND squ = x THEN
     BEGIN
@@ -8,6 +9,11 @@ BEGIN
         squ := squ * x;
         WRITE(squ);
     END;
-   x := squ * 2;
-   WRITE (x);
+    WHILE x != 7 DO
+     BEGIN
+        x := x + 1;
+        squ := squ * 2;
+     END;
+    x := squ * 2;
+    WRITE (x);
 END.
