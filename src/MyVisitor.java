@@ -11,6 +11,8 @@ public class MyVisitor extends MAABaseVisitor<Object> {
     HashMap<String, Object> currentTable;
     HashMap<String, MAAParser.BlockContext> function = new HashMap<>();
 
+
+
     private Object getVariable(String ident) throws Exception {
         if (currentTable.containsKey(ident)) {
             return currentTable.get(ident);}
@@ -72,6 +74,11 @@ public class MyVisitor extends MAABaseVisitor<Object> {
             }
         return null;
     }
+
+    /*@Override
+    public String visitBreakstmt(MAAParser.BreakstmtContext ctx) {
+        return null;
+    }*/
 
     @Override
     public String visitConditionunion(MAAParser.ConditionunionContext ctx) {
@@ -266,48 +273,19 @@ public class MyVisitor extends MAABaseVisitor<Object> {
     @Override
     public String visitSummExpr(MAAParser.SummExprContext ctx) {
         Object left = visit(ctx.expression(0));
-        Object right;
+        Object right = visit(ctx.expression(1));
         String sub = ".";
+        boolean flag;
 
-        float summf = 0;
-        float differf = 0;
-        int summi = 0;
-        int differi = 0;
-        boolean flag = false;
-
-        if (ctx.expression(1) != null) {
-            right = visit(ctx.expression(1));
-        } else {
-            right = new String("0");
-        }
-
-        String sl = left.toString();
-        String sr = right.toString();
-        if (sl.indexOf(sub) != -1 || sr.indexOf(sub) != -1) {
-            flag = true;
-            float leftfloat = Float.parseFloat(left.toString());
-            float rightfloat = Float.parseFloat(right.toString());
-            summf = leftfloat + rightfloat;
-            differf = leftfloat - rightfloat;
-        } else {
-            flag = false;
-            int leftint = Integer.parseInt(left.toString());
-            int rightint = Integer.parseInt(right.toString());
-            summi = leftint + rightint;
-            differi = leftint - rightint;
-        }
+        if (left.toString().indexOf(sub) != -1 || right.toString().indexOf(sub) != -1)  flag = true;
+        else flag = false;
         switch (ctx.op.getText()) {
             case "+":
-                if (flag == true)
-                    return String.valueOf(summf);
-                else
-                    return String.valueOf(summi);
-            case "-": {
-                if (flag == true)
-                    return String.valueOf(differf);
-                else
-                    return String.valueOf(differi);
-            }
+                if (flag == true) return String.valueOf(Float.parseFloat(left.toString())+Float.parseFloat(right.toString()));
+                else return String.valueOf(Integer.parseInt(left.toString())+Integer.parseInt(right.toString()));
+            case "-":
+                if (flag == true) return String.valueOf(Float.parseFloat(left.toString())-Float.parseFloat(right.toString()));
+                else return String.valueOf(Integer.parseInt(left.toString())-Integer.parseInt(right.toString()));
         }
         return null;
     }
@@ -315,51 +293,19 @@ public class MyVisitor extends MAABaseVisitor<Object> {
     @Override
     public String visitMultExpr(MAAParser.MultExprContext ctx) {
         Object left = visit(ctx.expression(0));
-        Object right;
+        Object right = visit(ctx.expression(1));
         String sub = ".";
+        boolean flag;
 
-        float delf = 0;
-        float multf = 0;
-        int deli = 0;
-        int multi = 0;
-        boolean flag = false;
-
-        if (ctx.expression(1) != null) {
-            right = visit(ctx.expression(1));
-        } else {
-            right = new String("0");
-        }
-
-        String sl = left.toString();
-        String sr = right.toString();
-        if (sl.indexOf(sub) != -1 || sr.indexOf(sub)!=-1)
-        {
-            flag = true;
-            float leftfloat = Float.parseFloat(left.toString());
-            float  rightfloat = Float.parseFloat(right.toString());
-            delf = leftfloat / rightfloat;
-            multf = leftfloat * rightfloat;
-        }
-        else {
-
-            flag = false;
-            int leftint = Integer.parseInt(left.toString());
-            int rightint = Integer.parseInt(right.toString());
-            deli = leftint / rightint;
-            multi = leftint * rightint;
-        }
+        if (left.toString().indexOf(sub) != -1 || right.toString().indexOf(sub)!=-1) flag = true;
+        else flag = false;
         switch (ctx.op.getText()) {
             case "*":
-                if(flag==true)
-                    return String.valueOf(multf);
-                else
-                    return String.valueOf(multi);
-            case "/": {
-                if (flag == true)
-                    return String.valueOf(delf);
-                else
-                    return String.valueOf(deli);
-            }
+                if(flag==true) return String.valueOf(Float.parseFloat(left.toString()) * Float.parseFloat(right.toString()));
+                else return String.valueOf(Integer.parseInt(left.toString()) * Integer.parseInt(right.toString()));
+            case "/":
+                if (flag == true) return String.valueOf(Float.parseFloat(left.toString()) / Float.parseFloat(right.toString()));
+                else return String.valueOf(Integer.parseInt(left.toString()) / Integer.parseInt(right.toString()));
         }
         return null;
     }
