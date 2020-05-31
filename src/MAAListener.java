@@ -27,16 +27,6 @@ public interface MAAListener extends ParseTreeListener {
 	 */
 	void exitBlock(MAAParser.BlockContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link MAAParser#consts}.
-	 * @param ctx the parse tree
-	 */
-	void enterConsts(MAAParser.ConstsContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MAAParser#consts}.
-	 * @param ctx the parse tree
-	 */
-	void exitConsts(MAAParser.ConstsContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link MAAParser#vars}.
 	 * @param ctx the parse tree
 	 */

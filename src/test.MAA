@@ -1,5 +1,7 @@
 VAR int x = 1;
 VAR int squ = 2;
+PROCEDURE id;
+    squ := squ * 2;
 
 BEGIN
    IF x <= squ AND squ = x THEN
@@ -9,11 +11,12 @@ BEGIN
         squ := squ * x;
         WRITE(squ);
     END;
-    WHILE x != 7 DO
+    WHILE x = 7 DO
      BEGIN
         x := x + 1;
         squ := squ * 2;
      END;
+     CALL squ;
     x := squ * 2;
     WRITE (x);
 END.

@@ -5,11 +5,7 @@ program
    ;
 
 block
-   : consts? (vars*)? (procedure*)? statement
-   ;
-
-consts
-   : CONST vars   (';' 'const' vars) * ';'
+   : (vars*)? (procedure*)? statement
    ;
 
 vars

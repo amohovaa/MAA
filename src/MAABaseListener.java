@@ -39,18 +39,6 @@ public class MAABaseListener implements MAAListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterConsts(MAAParser.ConstsContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitConsts(MAAParser.ConstsContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterVars(MAAParser.VarsContext ctx) { }
 	/**
 	 * {@inheritDoc}

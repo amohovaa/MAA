@@ -4,14 +4,8 @@ import java.lang.Override;
 
 
 public class MyVisitor extends MAABaseVisitor<Object> {
-    HashMap<String, Object> consts = new HashMap<>();
-    Stack<HashMap<String, Object>> functionTables = new Stack<>();
-    Stack<HashMap<String, Object>> tables = new Stack<>();
     Stack<HashMap<String, Object>> currentStack;
     HashMap<String, Object> currentTable;
-    HashMap<String, MAAParser.BlockContext> function = new HashMap<>();
-
-
 
     private Object getVariable(String ident) throws Exception {
         if (currentTable.containsKey(ident)) {
@@ -21,18 +15,10 @@ public class MyVisitor extends MAABaseVisitor<Object> {
                 return hm.get(ident);
             }
         }
-        if (consts.containsKey(ident)) {
-            return consts.get(ident);
-        }
 
         throw new Exception("No such variable in the table");
     }
 
-    @Override public String  visitConsts(MAAParser.ConstsContext ctx) {
-        currentTable = consts;
-        visitChildren(ctx);
-        return null;
-    }
 
     @Override
     public Object visitVars (MAAParser.VarsContext ctx){
@@ -43,12 +29,10 @@ public class MyVisitor extends MAABaseVisitor<Object> {
             value = visit(ctx.expression());
         currentTable.put(varName, value);
         if (value != null)
-            System.out.println("Vars: " + type + " " + varName + " " + value.toString());
+            System.out.println("VAR: " + type + " " + varName + " := " + value.toString());
         else
-            System.out.println("VarDeclaration (no value): " + type + " " + varName + " as NULL");
-
+            System.out.println("VAR (no value): " + type + " " + varName + " as NULL");
         currentTable.put(varName, value);
-
         return null;
     }
 
@@ -75,10 +59,6 @@ public class MyVisitor extends MAABaseVisitor<Object> {
         return null;
     }
 
-    /*@Override
-    public String visitBreakstmt(MAAParser.BreakstmtContext ctx) {
-        return null;
-    }*/
 
     @Override
     public String visitConditionunion(MAAParser.ConditionunionContext ctx) {
@@ -98,11 +78,9 @@ public class MyVisitor extends MAABaseVisitor<Object> {
         Object left = visit(ctx.expression(0));
         Object right = visit(ctx.expression(1));
         String sub = ".";
-        boolean flag = false;
+        boolean flag;
 
-        String sl = left.toString();
-        String sr = right.toString();
-        if (sl.indexOf(sub) != -1 || sr.indexOf(sub) != -1) flag = true;
+        if (left.toString().indexOf(sub) != -1 || right.toString().indexOf(sub) != -1) flag = true;
         else flag = false;
 
         switch (ctx.op.getText()) {
@@ -172,7 +150,7 @@ public class MyVisitor extends MAABaseVisitor<Object> {
 
     }
 
-    /*@Override
+    @Override
     public Object visitProcedure(MAAParser.ProcedureContext ctx) {
         String ident = ctx.ident().getText();
         System.out.println("ident" + ident);
@@ -197,7 +175,7 @@ public class MyVisitor extends MAABaseVisitor<Object> {
             e.printStackTrace();
         }
         return null;
-    }*/
+    }
 
     @Override
     public String visitProgram (MAAParser.ProgramContext ctx)
@@ -233,7 +211,7 @@ public class MyVisitor extends MAABaseVisitor<Object> {
     @Override
     public Object visitIdent (MAAParser.IdentContext ctx) {
         try {
-            System.out.println("GetVariable:" + ctx.getText() + " is: " + getVariable(ctx.getText()));
+            System.out.println("GetVariable: " + ctx.getText() + " = " + getVariable(ctx.getText()));
             return getVariable(ctx.getText());
         } catch (Exception e) {
             e.printStackTrace();
@@ -266,7 +244,7 @@ public class MyVisitor extends MAABaseVisitor<Object> {
     @Override
     public String visitWritestmt(MAAParser.WritestmtContext ctx) {
         String toPrint = (String) visit(ctx.expressionunion());
-        System.out.println("WRITE ( " + toPrint + " )");
+        System.out.println("WRITE: " + toPrint);
         return null;
     }
 
@@ -308,23 +286,5 @@ public class MyVisitor extends MAABaseVisitor<Object> {
                 else return String.valueOf(Integer.parseInt(left.toString()) / Integer.parseInt(right.toString()));
         }
         return null;
-    }
-
-    @Override
-    public String visitLiteral (MAAParser.LiteralContext ctx){
-        if (ctx.charLiteral()!= null) return ctx.charLiteral().STRING().getText();
-        return ctx.getText();
-    }
-
-    @Override
-    public Object visitFloatLiteral(MAAParser.FloatLiteralContext ctx){
-        System.out.println("Float: " + ctx.getText());
-        return Float.parseFloat(ctx.getText());
-    }
-
-    @Override
-    public Object visitIntegerLiteral (MAAParser.IntegerLiteralContext ctx){
-        System.out.println("Integer: " + ctx.getText());
-        return Integer.parseInt(ctx.getText());
     }
 }

@@ -30,13 +30,6 @@ public class MAABaseVisitor<T> extends AbstractParseTreeVisitor<T> implements MA
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitConsts(MAAParser.ConstsContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
 	@Override public T visitVars(MAAParser.VarsContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}

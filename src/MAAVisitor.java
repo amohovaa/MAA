@@ -22,12 +22,6 @@ public interface MAAVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitBlock(MAAParser.BlockContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link MAAParser#consts}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitConsts(MAAParser.ConstsContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link MAAParser#vars}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
