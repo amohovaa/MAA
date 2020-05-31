@@ -6,6 +6,7 @@ import java.lang.Override;
 public class MyVisitor extends MAABaseVisitor<Object> {
     Stack<HashMap<String, Object>> currentStack;
     HashMap<String, Object> currentTable;
+    HashMap<String, MAAParser.BlockContext> BlockTable = new HashMap<>();
 
     private Object getVariable(String ident) throws Exception {
         if (currentTable.containsKey(ident)) {
@@ -41,8 +42,8 @@ public class MyVisitor extends MAABaseVisitor<Object> {
         System.out.println("IF: ");
         Object conditionResult = visit(ctx.conditionunion());
         if (conditionResult.equals("true")) {
-            visit(ctx.statement(0));
-            visitChildren(ctx);
+            for (int i = 0; i < ctx.statement().size(); i++)
+                visit(ctx.statement(i));
         }
         return null;
     }
@@ -150,7 +151,7 @@ public class MyVisitor extends MAABaseVisitor<Object> {
 
     }
 
-    @Override
+    /*@Override
     public Object visitProcedure(MAAParser.ProcedureContext ctx) {
         String ident = ctx.ident().getText();
         System.out.println("ident" + ident);
@@ -175,7 +176,7 @@ public class MyVisitor extends MAABaseVisitor<Object> {
             e.printStackTrace();
         }
         return null;
-    }
+    }*/
 
     @Override
     public String visitProgram (MAAParser.ProgramContext ctx)
