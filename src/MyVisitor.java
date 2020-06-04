@@ -4,6 +4,8 @@ import java.lang.Override;
 
 
 public class MyVisitor extends MAABaseVisitor<Object> {
+    String procedure = "";
+    boolean global = false;
     Stack<HashMap<String, Object>> currentStack;
     HashMap<String, Object> currentTable;
     HashMap<String, MAAParser.BlockContext> BlockTable = new HashMap<>();
@@ -20,20 +22,39 @@ public class MyVisitor extends MAABaseVisitor<Object> {
         throw new Exception("No such variable in the table");
     }
 
+    @Override
+    public Object visitBreakstmt(MAAParser.BreakstmtContext ctx) {
+        System.out.println("BREAK");
+        GLLVM.Break();
+        return null;
+    }
+
+    @Override
+    public Object visitContinuestmt(MAAParser.ContinuestmtContext ctx) {
+        GLLVM.Continue();
+        return null;
+    }
 
     @Override
     public Object visitVars (MAAParser.VarsContext ctx){
         String varName = ctx.ident().getText();
         String type = ctx.type().getText();
         Object value = visit(ctx.expression());
-        if (ctx.children.contains(ctx.expression()))
-            value = visit(ctx.expression());
         currentTable.put(varName, value);
-        if (value != null)
-            System.out.println("VAR: " + type + " " + varName + " := " + value.toString());
-        else
-            System.out.println("VAR (no value): " + type + " " + varName + " as NULL");
-        currentTable.put(varName, value);
+
+        if (type.equals("int")) {
+            if (value == null)
+                value=0;
+            GLLVM.declare_i32(varName, global, value);
+        }else {
+            if (type.equals("float"))
+            {
+                if(value == null)
+                    value=0;
+                GLLVM.declare_double(varName, global, value);
+            }
+
+        }
         return null;
     }
 
@@ -41,6 +62,7 @@ public class MyVisitor extends MAABaseVisitor<Object> {
     public String visitIfstmt(MAAParser.IfstmtContext ctx) {
         System.out.println("IF: ");
         Object conditionResult = visit(ctx.conditionunion());
+        GLLVM.if_start((String)conditionResult);
         if (conditionResult.equals("true")) {
             for (int i = 0; i < ctx.statement().size(); i++)
                 visit(ctx.statement(i));
@@ -50,13 +72,17 @@ public class MyVisitor extends MAABaseVisitor<Object> {
 
     @Override
     public String visitWhilestmt(MAAParser.WhilestmtContext ctx) {
-        System.out.println("WHILE: ");
+        System.out.println("WHILE");
+        GLLVM.while_start();
+
         Object conditionResult = visit(ctx.conditionunion());
+        GLLVM.while_condition((String)conditionResult);
         while (conditionResult.equals("true")) {
             for (int i = 0; i < ctx.statement().size(); i++)
                 visit(ctx.statement(i));
             conditionResult = visit(ctx.conditionunion());
-            }
+        }
+        GLLVM.while_end();
         return null;
     }
 
@@ -182,6 +208,7 @@ public class MyVisitor extends MAABaseVisitor<Object> {
     public String visitProgram (MAAParser.ProgramContext ctx)
     {
         visitChildren(ctx);
+        GLLVM.generate();
         return null;
     }
 
@@ -189,8 +216,11 @@ public class MyVisitor extends MAABaseVisitor<Object> {
     @Override
     public String visitBlock (MAAParser.BlockContext ctx){
         HashMap<String, Object> currentBlocktable = new HashMap<>();
+        String id = ctx.statement().getText();
         currentTable = currentBlocktable;
+        GLLVM.function_start(id);
         visitChildren(ctx);
+        GLLVM.function_end();
         return null;
     }
 
@@ -224,10 +254,25 @@ public class MyVisitor extends MAABaseVisitor<Object> {
     public String  visitAssignstmt(MAAParser.AssignstmtContext ctx) {
         try {
             String varName = ctx.ident().getText();
-            Object exp = visit(ctx.expression());
+            Object value = visit(ctx.expression());
+            Object left = visit(ctx.expression());
+            Object right = visit(ctx.expression());
+            String sub=".";
 
-            currentTable.put(varName, exp);
-            System.out.println("Assigment: " + varName + " = " + exp);
+            if (ctx.children.contains(ctx.expression())) value = visit(ctx.expression());
+            currentTable.put(varName, value);
+            currentTable.put(varName, value);
+
+            if (left.toString().contains(sub) || right.toString().contains(sub)) {
+                if(value==null)
+                    value=0;
+                GLLVM.assign_double(varName, global, value);
+            } else {
+                if(value==null)
+                    value=0;
+                GLLVM.assign_i32(varName, global, value);
+            }
+
         } catch (Exception e) {
             System.out.println("!!!Error!!!");
             System.out.println(e.fillInStackTrace());
@@ -246,8 +291,28 @@ public class MyVisitor extends MAABaseVisitor<Object> {
     public String visitWritestmt(MAAParser.WritestmtContext ctx) {
         String toPrint = (String) visit(ctx.expressionunion());
         System.out.println("WRITE: " + toPrint);
+        Object left = visit(ctx.expressionunion());
+        String sub = ".";
+        boolean flag = false;
+        boolean type;
+        if (left.toString().contains(sub)) type = true;
+        else type = false;
+        if (left.toString().contains("'")) flag = true;
+
+        if (flag == true) {
+            GLLVM.printf_string(toPrint, toPrint.length(), global, procedure);
+            GLLVM.print(toPrint);
+        } else {
+            if (type == true) {
+                GLLVM.printf_double(toPrint, global);
+                GLLVM.print(toPrint);
+            } else {
+                GLLVM.printf_i32(toPrint, global);
+                GLLVM.print(toPrint);
+            }
+        }
         return null;
-    }
+}
 
     @Override
     public String visitSummExpr(MAAParser.SummExprContext ctx) {
