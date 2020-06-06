@@ -62,11 +62,12 @@ public class MyVisitor extends MAABaseVisitor<Object> {
     public String visitIfstmt(MAAParser.IfstmtContext ctx) {
         System.out.println("IF: ");
         Object conditionResult = visit(ctx.conditionunion());
-        GLLVM.if_start((String)conditionResult);
+        GLLVM.if_start();
         if (conditionResult.equals("true")) {
             for (int i = 0; i < ctx.statement().size(); i++)
                 visit(ctx.statement(i));
         }
+        GLLVM.if_end();
         return null;
     }
 
@@ -76,7 +77,7 @@ public class MyVisitor extends MAABaseVisitor<Object> {
         GLLVM.while_start();
 
         Object conditionResult = visit(ctx.conditionunion());
-        GLLVM.while_condition((String)conditionResult);
+        GLLVM.while_condition(GLLVM.reg-1);
         while (conditionResult.equals("true")) {
             for (int i = 0; i < ctx.statement().size(); i++)
                 visit(ctx.statement(i));
@@ -215,12 +216,13 @@ public class MyVisitor extends MAABaseVisitor<Object> {
 
     @Override
     public String visitBlock (MAAParser.BlockContext ctx){
+        if (ctx.parent.getChildCount() == 2) global = true;
+        else global = false;
+
         HashMap<String, Object> currentBlocktable = new HashMap<>();
         String id = ctx.statement().getText();
         currentTable = currentBlocktable;
-        GLLVM.function_start(id);
         visitChildren(ctx);
-        GLLVM.function_end();
         return null;
     }
 
@@ -304,11 +306,13 @@ public class MyVisitor extends MAABaseVisitor<Object> {
             GLLVM.print(toPrint);
         } else {
             if (type == true) {
-                GLLVM.printf_double(toPrint, global);
-                GLLVM.print(toPrint);
+                String name = ctx.expressionunion().getText();
+                GLLVM.printf_double(name, global);
+                GLLVM.print(" ");
             } else {
-                GLLVM.printf_i32(toPrint, global);
-                GLLVM.print(toPrint);
+                String name = ctx.expressionunion().getText();
+                GLLVM.printf_i32(name, global);
+                GLLVM.print(" ");
             }
         }
         return null;

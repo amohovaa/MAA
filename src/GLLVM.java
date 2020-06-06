@@ -31,7 +31,7 @@ public class GLLVM  {
         text += "@strsd = constant [4 x i8] c\"%lf\\00\"\n";
         text += "\n";
         text += header_text;
-        text += "define i32 @funct() nounwind {\n";
+        text += "define i32 @main() nounwind {\n";
         text += main_text;
         text += "  ret i32 0\n";
         text += "}\n";
@@ -72,7 +72,7 @@ public class GLLVM  {
 
         String str_type = "[" + (str_len + 2) + " x i8]";
         header_text += "@str" + str_i + " = constant" + str_type + " c\"" + text + "\\0A\\00\"\n";
-        buffer += "%" + reg + " = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ( " + str_type + ", " + str_type + "* @str " + str_i + ", i32 0, i32 0))\n";
+        buffer += "%" + reg + " = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ( " + str_type + ", " + str_type + "* @str" + str_i + ", i32 0, i32 0))\n";
         str_i++;
         reg++;
     }
@@ -118,34 +118,34 @@ public class GLLVM  {
 
     static void declare_i32(String id, boolean global,Object value) {
         if (global) {
-            header_text += "@" + id + " = global i32 "+value+"\n";
+            header_text += "@" + id + " = global i32 0\n";
         } else {
-            buffer += "%" + id + " = alloca i32 " +value+"\n";
+            buffer += "%" + id + " = alloca i32\n";
         }
     }
 
     static void declare_double(String id, boolean global, Object value) {
         if (global) {
-            header_text += "@" + id + " = global double "+value+"\n";
+            header_text += "@" + id + " = global double 0.0\n";
         } else {
-            buffer += "%" + id + " = alloca double "+value+"\n";
+            buffer += "%" + id + " = alloca double\n";
         }
     }
 
     // assign
     static void assign_i32(String id,  boolean globalNames,Object value) {
         if (globalNames) {
-            buffer += "store i32 " + value+ ", i32* @ " + id + "\n";
+            buffer += "store i32 " + value+ ", i32* @" + id + "\n";
         } else {
-            buffer += "store i32 " + value+ ", i32* % " + id + "\n";
+            buffer += "store i32 " + value+ ", i32* %" + id + "\n";
         }
     }
 
     static void assign_double(String id,  boolean globalNames,Object value) {
         if (globalNames) {
-            buffer += "store double " + value + ", double* @ " + id + "\n";
+            buffer += "store double " + value + ", double* @" + id + "\n";
         } else {
-            buffer += "store double " + value + ", double* % " + id + "\n";
+            buffer += "store double " + value + ", double* %" + id + "\n";
         }
     }
 
@@ -231,9 +231,9 @@ public class GLLVM  {
         reg++;
     }
 
-    static void if_start(String val) {
+    static void if_start() {
         br++;
-        buffer += "br i1 %" + val + ", label %true" + br + ", label %false" + br + "\n";
+        buffer += "br i1 %" + (reg - 1) + ", label %true" + br + ", label %false" + br + "\n";
         buffer += "true" + br + ":\n";
         br_stack.push(br);
     }
