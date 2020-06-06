@@ -14,19 +14,23 @@ define i32 @main() nounwind {
   store double 7.0, double* @x
   br label %while1
   while1:
-  br i1 %0, label %true1, label %false1
+  %1 = load double, double* @x
+  %2 = fcmp one double %1, 9.0
+  br i1 %2, label %true1, label %false1
   true1:
   store double 8.0, double* @x
   store double 20.0, double* @squ
+  %3 = load double, double* @x
+  %4 = fcmp one double %3, 9.0
   store double 9.0, double* @x
   store double 200.0, double* @squ
   br label %while1
   false1:
-  %1 = load double, double* @x
-  %2 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strpd, i32 0, i32 0), double %1)
-  %3 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ( [3 x i8], [3 x i8]* @str0, i32 0, i32 0))
-  %4 = load double, double* @squ
-  %5 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strpd, i32 0, i32 0), double %4)
-  %6 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ( [3 x i8], [3 x i8]* @str1, i32 0, i32 0))
+  %5 = load double, double* @x
+  %6 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strpd, i32 0, i32 0), double %5)
+  %7 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ( [3 x i8], [3 x i8]* @str0, i32 0, i32 0))
+  %8 = load double, double* @squ
+  %9 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @strpd, i32 0, i32 0), double %8)
+  %10 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ( [3 x i8], [3 x i8]* @str1, i32 0, i32 0))
   ret i32 0
 }

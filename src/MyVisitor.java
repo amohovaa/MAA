@@ -58,6 +58,16 @@ public class MyVisitor extends MAABaseVisitor<Object> {
         return null;
     }
 
+    private static boolean isExpr(String s) {
+        if (s.matches(".*[a-zA-Z].*")) {
+
+            return true;
+        } else {
+
+            return false;
+        }
+    }
+
     @Override
     public String visitIfstmt(MAAParser.IfstmtContext ctx) {
         System.out.println("IF: ");
@@ -89,7 +99,8 @@ public class MyVisitor extends MAABaseVisitor<Object> {
 
 
     @Override
-    public String visitConditionunion(MAAParser.ConditionunionContext ctx) {
+    public Object visitConditionunion(MAAParser.ConditionunionContext ctx) {
+
         for (int i = 0; i < ctx.condition().size(); i++) {
             Object result = visitChildren(ctx);
             if (result == null) {
@@ -114,64 +125,220 @@ public class MyVisitor extends MAABaseVisitor<Object> {
         switch (ctx.op.getText()) {
             case "=":
                 if (flag == true) {
-                    if (Float.parseFloat(left.toString()) == Float.parseFloat(right.toString()))
+                    if (Float.parseFloat(left.toString()) == Float.parseFloat(right.toString())) {
+                        if (isExpr(ctx.expression(0).getText()) && isExpr(ctx.expression(1).getText())) {
+                            GLLVM.load_double(ctx.expression(0).getText());
+                            GLLVM.load_double(ctx.expression(1).getText());
+                            GLLVM.eq2("FLOAT");
+                        } else if (isExpr(ctx.expression(0).getText()) && !isExpr(ctx.expression(1).getText())) {
+                            GLLVM.load_double(ctx.expression(0).getText());
+                            GLLVM.eq1(ctx.expression(1).getText(), "FLOAT");
+                        } else if (!isExpr(ctx.expression(0).getText()) && isExpr(ctx.expression(1).getText())) {
+                            GLLVM.load_double(ctx.expression(1).getText());
+                            GLLVM.eq1(ctx.expression(0).getText(), "FLOAT");
+                        } else if (!isExpr(ctx.expression(0).getText()) && !isExpr(ctx.expression(1).getText())) {
+                            GLLVM.eq0(ctx.expression(0).getText(), ctx.expression(1).getText(), "FLOAT");
+                        }
                         return "true";
-                    else return "false";
+                    } else return "false";
                 } else {
-                    if (Integer.parseInt(left.toString()) == Integer.parseInt(right.toString()))
+                    if (Integer.parseInt(left.toString()) == Integer.parseInt(right.toString())) {
+                        if (isExpr(ctx.expression(0).getText()) && isExpr(ctx.expression(1).getText())) {
+                            GLLVM.load_i32(ctx.expression(0).getText());
+                            GLLVM.load_i32(ctx.expression(1).getText());
+                            GLLVM.eq2("INTEGER");
+                        } else if (isExpr(ctx.expression(0).getText()) && !isExpr(ctx.expression(1).getText())) {
+                            GLLVM.load_i32(ctx.expression(0).getText());
+                            GLLVM.eq1(ctx.expression(1).getText(), "INTEGER");
+                        } else if (!isExpr(ctx.expression(0).getText()) && isExpr(ctx.expression(1).getText())) {
+                            GLLVM.load_i32(ctx.expression(1).getText());
+                            GLLVM.eq1(ctx.expression(0).getText(), "INTEGER");
+                        } else if (!isExpr(ctx.expression(0).getText()) && !isExpr(ctx.expression(1).getText())) {
+                            GLLVM.eq0(ctx.expression(0).getText(), ctx.expression(1).getText(), "INTEGER");
+                        }
                         return "true";
-                    else return "false";
+                    } else return "false";
                 }
-
             case "!=":
                 if (flag == true) {
-                    if (Float.parseFloat(left.toString()) != Float.parseFloat(right.toString()))
+                    if (Float.parseFloat(left.toString()) != Float.parseFloat(right.toString())) {
+                        if (isExpr(ctx.expression(0).getText()) && isExpr(ctx.expression(1).getText())) {
+                            GLLVM.load_double(ctx.expression(0).getText());
+                            GLLVM.load_double(ctx.expression(1).getText());
+                            GLLVM.noeq2("FLOAT");
+                        } else if (isExpr(ctx.expression(0).getText()) && !isExpr(ctx.expression(1).getText())) {
+                            GLLVM.load_double(ctx.expression(0).getText());
+                            GLLVM.noeq1(ctx.expression(1).getText(), "FLOAT");
+                        } else if (!isExpr(ctx.expression(0).getText()) && isExpr(ctx.expression(1).getText())) {
+                            GLLVM.load_double(ctx.expression(1).getText());
+                            GLLVM.noeq1(ctx.expression(0).getText(), "FLOAT");
+                        } else if (!isExpr(ctx.expression(0).getText()) && !isExpr(ctx.expression(1).getText())) {
+                            GLLVM.noeq0(ctx.expression(0).getText(), ctx.expression(1).getText(), "FLOAT");
+                        }
                         return "true";
-                    else return "false";
+                    } else return "false";
                 } else {
-                    if (Integer.parseInt(left.toString()) != Integer.parseInt(right.toString()))
+                    if (Integer.parseInt(left.toString()) != Integer.parseInt(right.toString())) {
+                        if (isExpr(ctx.expression(0).getText()) && isExpr(ctx.expression(1).getText())) {
+                            GLLVM.load_i32(ctx.expression(0).getText());
+                            GLLVM.load_i32(ctx.expression(1).getText());
+                            GLLVM.noeq2("INTEGER");
+                        } else if (isExpr(ctx.expression(0).getText()) && !isExpr(ctx.expression(1).getText())) {
+                            GLLVM.load_i32(ctx.expression(0).getText());
+                            GLLVM.noeq1(ctx.expression(1).getText(), "INTEGER");
+                        } else if (!isExpr(ctx.expression(0).getText()) && isExpr(ctx.expression(1).getText())) {
+                            GLLVM.load_i32(ctx.expression(1).getText());
+                            GLLVM.noeq1(ctx.expression(0).getText(), "INTEGER");
+                        } else if (!isExpr(ctx.expression(0).getText()) && !isExpr(ctx.expression(1).getText())) {
+                            GLLVM.noeq0(ctx.expression(0).getText(), ctx.expression(1).getText(), "INTEGER");
+                        }
                         return "true";
-                    else return "false";
+                    } else return "false";
                 }
             case "<":
                 if (flag == true) {
-                    if (Float.parseFloat(left.toString()) < Float.parseFloat(right.toString()))
+                    if (Float.parseFloat(left.toString()) < Float.parseFloat(right.toString())) {
+                        if (isExpr(ctx.expression(0).getText()) && isExpr(ctx.expression(1).getText())) {
+                            GLLVM.load_double(ctx.expression(0).getText());
+                            GLLVM.load_double(ctx.expression(1).getText());
+                            GLLVM.less2("FLOAT");
+                        } else if (isExpr(ctx.expression(0).getText()) && !isExpr(ctx.expression(1).getText())) {
+                            GLLVM.load_double(ctx.expression(0).getText());
+                            GLLVM.less1_1(ctx.expression(1).getText(), "FLOAT");
+                        } else if (!isExpr(ctx.expression(0).getText()) && isExpr(ctx.expression(1).getText())) {
+                            GLLVM.load_double(ctx.expression(1).getText());
+                            GLLVM.less1_2(ctx.expression(0).getText(), "FLOAT");
+                        } else if (!isExpr(ctx.expression(0).getText()) && !isExpr(ctx.expression(1).getText())) {
+                            GLLVM.less0(ctx.expression(0).getText(), ctx.expression(1).getText(), "FLOAT");
+                        }
                         return "true";
-                    else return "false";
+                    } else return "false";
                 } else {
-                    if (Integer.parseInt(left.toString()) < Integer.parseInt(right.toString()))
+                    if (Integer.parseInt(left.toString()) < Integer.parseInt(right.toString())) {
+                        if (isExpr(ctx.expression(0).getText()) && isExpr(ctx.expression(1).getText())) {
+                            GLLVM.load_i32(ctx.expression(0).getText());
+                            GLLVM.load_i32(ctx.expression(1).getText());
+                            GLLVM.less2("INTEGER");
+                        } else if (isExpr(ctx.expression(0).getText()) && !isExpr(ctx.expression(1).getText())) {
+                            GLLVM.load_i32(ctx.expression(0).getText());
+                            GLLVM.less1_1(ctx.expression(1).getText(), "INTEGER");
+                        } else if (!isExpr(ctx.expression(0).getText()) && isExpr(ctx.expression(1).getText())) {
+                            GLLVM.load_i32(ctx.expression(1).getText());
+                            GLLVM.less1_2(ctx.expression(0).getText(), "INTEGER");
+                        } else if (!isExpr(ctx.expression(0).getText()) && !isExpr(ctx.expression(1).getText())) {
+                            GLLVM.less0(ctx.expression(0).getText(), ctx.expression(1).getText(), "INTEGER");
+                        }
                         return "true";
-                    else return "false";
+                    } else return "false";
                 }
             case "<=":
                 if (flag == true) {
-                    if (Float.parseFloat(left.toString()) <= Float.parseFloat(right.toString()))
+                    if (Float.parseFloat(left.toString()) <= Float.parseFloat(right.toString())) {
+                        if (isExpr(ctx.expression(0).getText()) && isExpr(ctx.expression(1).getText())) {
+                            GLLVM.load_double(ctx.expression(0).getText());
+                            GLLVM.load_double(ctx.expression(1).getText());
+                            GLLVM.lesseq2("FLOAT");
+                        } else if (isExpr(ctx.expression(0).getText()) && !isExpr(ctx.expression(1).getText())) {
+                            GLLVM.load_double(ctx.expression(0).getText());
+                            GLLVM.lesseq1_1(ctx.expression(1).getText(), "FLOAT");
+                        } else if (!isExpr(ctx.expression(0).getText()) && isExpr(ctx.expression(1).getText())) {
+                            GLLVM.load_double(ctx.expression(1).getText());
+                            GLLVM.lesseq1_2(ctx.expression(0).getText(), "FLOAT");
+                        } else if (!isExpr(ctx.expression(0).getText()) && !isExpr(ctx.expression(1).getText())) {
+                            GLLVM.lesseq0(ctx.expression(0).getText(), ctx.expression(1).getText(), "FLOAT");
+
+                        }
                         return "true";
-                    else return "false";
+                    } else return "false";
                 } else {
-                    if (Integer.parseInt(left.toString()) <= Integer.parseInt(right.toString()))
+                    if (Integer.parseInt(left.toString()) <= Integer.parseInt(right.toString())) {
+                        if (isExpr(ctx.expression(0).getText()) && isExpr(ctx.expression(1).getText())) {
+                            GLLVM.load_i32(ctx.expression(0).getText());
+                            GLLVM.load_i32(ctx.expression(1).getText());
+                            GLLVM.lesseq2("INTEGER");
+                        } else if (isExpr(ctx.expression(0).getText()) && !isExpr(ctx.expression(1).getText())) {
+                            GLLVM.load_i32(ctx.expression(0).getText());
+                            GLLVM.lesseq1_1(ctx.expression(1).getText(), "INTEGER");
+                        } else if (!isExpr(ctx.expression(0).getText()) && isExpr(ctx.expression(1).getText())) {
+                            GLLVM.load_i32(ctx.expression(1).getText());
+                            GLLVM.lesseq1_2(ctx.expression(0).getText(), "INTEGER");
+                        } else if (!isExpr(ctx.expression(0).getText()) && !isExpr(ctx.expression(1).getText())) {
+                            GLLVM.lesseq0(ctx.expression(0).getText(), ctx.expression(1).getText(), "INTEGER");
+                        }
                         return "true";
-                    else return "false";
+                    } else return "false";
                 }
             case ">":
                 if (flag == true) {
-                    if (Float.parseFloat(left.toString()) > Float.parseFloat(right.toString()))
+                    if (Float.parseFloat(left.toString()) > Float.parseFloat(right.toString())) {
+                        if (isExpr(ctx.expression(0).getText()) && isExpr(ctx.expression(1).getText())) {
+                            GLLVM.load_double(ctx.expression(0).getText());
+                            GLLVM.load_double(ctx.expression(1).getText());
+                            GLLVM.more2("FLOAT");
+                        } else if (isExpr(ctx.expression(0).getText()) && !isExpr(ctx.expression(1).getText())) {
+                            GLLVM.load_double(ctx.expression(0).getText());
+                            GLLVM.more1_1(ctx.expression(1).getText(), "FLOAT");
+                        } else if (!isExpr(ctx.expression(0).getText()) && isExpr(ctx.expression(1).getText())) {
+                            GLLVM.load_double(ctx.expression(1).getText());
+                            GLLVM.more1_2(ctx.expression(0).getText(), "FLOAT");
+                        } else if (!isExpr(ctx.expression(0).getText()) && !isExpr(ctx.expression(1).getText())) {
+                            GLLVM.more0(ctx.expression(0).getText(), ctx.expression(1).getText(), "FLOAT");
+                        }
                         return "true";
-                    else return "false";
+                    } else return "false";
                 } else {
-                    if (Integer.parseInt(left.toString()) > Integer.parseInt(right.toString()))
+                    if (Integer.parseInt(left.toString()) > Integer.parseInt(right.toString())) {
+                        if (isExpr(ctx.expression(0).getText()) && isExpr(ctx.expression(1).getText())) {
+                            GLLVM.load_i32(ctx.expression(0).getText());
+                            GLLVM.load_i32(ctx.expression(1).getText());
+                            GLLVM.more2("INTEGER");
+                        } else if (isExpr(ctx.expression(0).getText()) && !isExpr(ctx.expression(1).getText())) {
+                            GLLVM.load_i32(ctx.expression(0).getText());
+                            GLLVM.more1_1(ctx.expression(1).getText(), "INTEGER");
+                        } else if (!isExpr(ctx.expression(0).getText()) && isExpr(ctx.expression(1).getText())) {
+                            GLLVM.load_i32(ctx.expression(1).getText());
+                            GLLVM.more1_2(ctx.expression(0).getText(), "INTEGER");
+                        } else if (!isExpr(ctx.expression(0).getText()) && !isExpr(ctx.expression(1).getText())) {
+                            GLLVM.more0(ctx.expression(0).getText(), ctx.expression(1).getText(), "INTEGER");
+                        }
                         return "true";
-                    else return "false";
+                    } else return "false";
                 }
             case ">=":
                 if (flag == true) {
-                    if (Float.parseFloat(left.toString()) >= Float.parseFloat(right.toString()))
+                    if (Float.parseFloat(left.toString()) >= Float.parseFloat(right.toString())) {
+                        if (isExpr(ctx.expression(0).getText()) && isExpr(ctx.expression(1).getText())) {
+                            GLLVM.load_double(ctx.expression(0).getText());
+                            GLLVM.load_double(ctx.expression(1).getText());
+                            GLLVM.moreeq2("FLOAT");
+                        } else if (isExpr(ctx.expression(0).getText()) && !isExpr(ctx.expression(1).getText())) {
+                            GLLVM.load_double(ctx.expression(0).getText());
+                            GLLVM.moreeq1_1(ctx.expression(1).getText(), "FLOAT");
+                        } else if (!isExpr(ctx.expression(0).getText()) && isExpr(ctx.expression(1).getText())) {
+                            GLLVM.load_double(ctx.expression(1).getText());
+                            GLLVM.moreeq1_2(ctx.expression(0).getText(), "FLOAT");
+                        } else if (!isExpr(ctx.expression(0).getText()) && !isExpr(ctx.expression(1).getText())) {
+                            GLLVM.moreeq0(ctx.expression(0).getText(), ctx.expression(1).getText(), "FLOAT");
+                        }
                         return "true";
-                    else return "false";
+                    } else return "false";
                 } else {
-                    if (Integer.parseInt(left.toString()) >= Integer.parseInt(right.toString()))
+                    if (Integer.parseInt(left.toString()) >= Integer.parseInt(right.toString())) {
+                        if (isExpr(ctx.expression(0).getText()) && isExpr(ctx.expression(1).getText())) {
+                            GLLVM.load_i32(ctx.expression(0).getText());
+                            GLLVM.load_i32(ctx.expression(1).getText());
+                            GLLVM.moreeq2("INTEGER");
+                        } else if (isExpr(ctx.expression(0).getText()) && !isExpr(ctx.expression(1).getText())) {
+                            GLLVM.load_i32(ctx.expression(0).getText());
+                            GLLVM.moreeq1_1(ctx.expression(1).getText(), "INTEGER");
+                        } else if (!isExpr(ctx.expression(0).getText()) && isExpr(ctx.expression(1).getText())) {
+                            GLLVM.load_i32(ctx.expression(1).getText());
+                            GLLVM.moreeq1_2(ctx.expression(0).getText(), "INTEGER");
+                        } else if (!isExpr(ctx.expression(0).getText()) && !isExpr(ctx.expression(1).getText())) {
+                            GLLVM.moreeq0(ctx.expression(0).getText(), ctx.expression(1).getText(), "INTEGER");
+                        }
                         return "true";
-                    else return "false";
+                    } else return "false";
                 }
         }
         return null;

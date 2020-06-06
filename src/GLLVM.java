@@ -205,29 +205,243 @@ public class GLLVM  {
 
 
     // load
-    static void load_i32(String id, HashSet<String> globalNames) {
-        if (globalNames != null && globalNames.contains(id)) {
-            buffer += "%" + reg + " = load i32, i32* @" + id + "\n";
-        } else {
-            buffer += "%" + reg + " = load i32, i32* %" + id + "\n";
-        }
+    static void load_i32(String id) {
+        buffer += "%" + reg + " = load i32, i32* @" + id + "\n";
         reg++;
     }
 
-    static void load_double(String id, HashSet<String> globalNames) {
-        if (globalNames.contains(id)) {
-            buffer += "%" + reg + " = load double, double* @" + id + "\n";
-        } else {
-            buffer += "%" + reg + " = load double, double* %" + id + "\n";
-        }
+    static void load_double(String id) {
+        buffer += "%" + reg + " = load double, double* @" + id + "\n";
         reg++;
     }
 
 
     // if
-    static void icmp(String id, String value, HashSet<String> globalNames) {
+    /*static void icmp(String id, String value, HashSet<String> globalNames) {
         load_i32(id, globalNames);
         buffer += "%" + reg + " = icmp eq i32 %" + (reg - 1) + ", " + value + "\n";
+        reg++;
+    }*/
+
+    static void eq2(String type){
+
+        if (type.equals("INTEGER")) {
+            buffer += "%" + reg + " = icmp eq i32 %" + (reg - 1) + ", %" + (reg - 2) + "\n";
+
+        }
+        else if (type.equals("FLOAT")){
+            buffer += "%" + reg + " = fcmp ueq double %" + (reg - 1) + ", %" + (reg - 2) + "\n";
+        }
+        reg++;
+    }
+    static void eq1(String value, String type){
+        if (type.equals("INTEGER")) {
+            buffer += "%" + reg + " = icmp eq i32 %" + (reg - 1) + ", " + value + "\n";
+        }
+        else if (type.equals("FLOAT")){
+            buffer += "%" + reg + " = fcmp ueq double %" + (reg - 1) + ", " + value + "\n";
+        }
+        reg++;
+    }
+    static void eq0(String value1, String value2, String type){
+
+        if (type.equals("INTEGER")) {
+            buffer += "%" + reg + " = icmp eq i32 " + value1 + ", " + value2 + "\n";
+        }
+        else if (type.equals("FLOAT")){
+            buffer += "%" + reg + " = fcmp ueq double " + value1 + ", " + value2 + "\n";
+        }
+        reg++;
+    }
+
+    static void noeq2(String type){
+        if (type.equals("INTEGER")) {
+            buffer += "%" + reg + " = icmp ne i32 %" + (reg - 2) + ", %" + (reg - 1) + "\n";
+        }
+        else if (type.equals("FLOAT")){
+            buffer += "%" + reg + " = fcmp one double %" + (reg - 2) + ", %" + (reg - 1) + "\n";
+        }
+        reg++;
+    }
+    static void noeq1(String value, String type){
+        if (type.equals("INTEGER")) {
+            buffer += "%" + reg + " = icmp ne i32 %" + (reg - 1) + ", " + value + "\n";
+        }
+        else if (type.equals("FLOAT")){
+            buffer += "%" + reg + " = fcmp one double %" + (reg - 1) + ", " + value + "\n";
+        }
+        reg++;
+    }
+    static void noeq0(String value1, String value2, String type){
+        if (type.equals("INTEGER")) {
+            buffer += "%" + reg + " = icmp ne i32 " + value1 + ", " + value2 + "\n";
+        }
+        else if (type.equals("FLOAT")){
+            buffer += "%" + reg + " = fcmp one double " + value1 + ", " + value2 + "\n";
+        }
+        reg++;
+    }
+    static void more2(String type){
+        if (type.equals("INTEGER")) {
+            buffer += "%" + reg + " = icmp sgt i32 %" + (reg - 2) + ", %" + (reg - 1) + "\n";
+        }
+        else if (type.equals("FLOAT")){
+            buffer += "%" + reg + " = fcmp ogt double %" + (reg - 2) + ", %" + (reg - 1) + "\n";
+        }
+        reg++;
+    }
+
+    static void more1_1(String value, String type){
+        if (type.equals("INTEGER")) {
+            buffer += "%" + reg + " = icmp sgt i32 %" + (reg - 1) + ", " + value + "\n";
+        }
+        else if (type.equals("FLOAT")){
+            buffer += "%" + reg + " = fcmp ogt double %" + (reg - 1) + ", " + value + "\n";
+        }
+        reg++;
+    }
+
+    static void more1_2(String value, String type){
+        if (type.equals("INTEGER")) {
+            buffer += "%" + reg + " = icmp sgt i32 " + value + ", %" + (reg-1) + "\n";
+        }
+        else if (type.equals("FLOAT")){
+            buffer += "%" + reg + " = fcmp ogt double " + value + ", %" + (reg-1) + "\n";
+        }
+        reg++;
+    }
+
+
+    static void more0(String value1, String value2, String type) {
+        if (type.equals("INTEGER")) {
+            buffer += "%" + reg + " = icmp sgt i32 " + value1 + ", " + value2 + "\n";
+        }
+        else if (type.equals("FLOAT")){
+            buffer += "%" + reg + " = fcmp ogt double " + value1 + ", " + value2 + "\n";
+        }
+        reg++;
+    }
+    static void less2(String type){
+        if (type.equals("INTEGER")) {
+            buffer += "%" + reg + " = icmp slt i32 %" + (reg - 2) + ", %" + (reg - 1) + "\n";
+        }
+        else if (type.equals("FLOAT")){
+            buffer += "%" + reg + " = fcmp olt double %" + (reg - 2) + ", %" + (reg - 1) + "\n";
+        }
+        reg++;
+    }
+    static void less1_1(String value, String type){
+        if (type.equals("INTEGER")) {
+            buffer += "%" + reg + " = icmp slt i32 %" + (reg - 1) + ", " + value + "\n";
+        }
+        else if (type.equals("FLOAT")){
+            buffer += "%" + reg + " = fcmp olt double %" + (reg - 1) + ", " + value + "\n";
+        }
+        reg++;
+    }
+
+    static void less1_2(String value, String type){
+        if (type.equals("INTEGER")) {
+            buffer += "%" + reg + " = icmp slt i32 " + value + ", %" + (reg - 1) + "\n";
+        }
+        else if (type.equals("FLOAT")){
+            buffer += "%" + reg + " = fcmp olt double " + value + ", %" + (reg-1) + "\n";
+        }
+        reg++;
+    }
+    static void less0(String value1, String value2, String type) {
+        if (type.equals("INTEGER")) {
+            buffer += "%" + reg + " = icmp slt i32 " + value1 + ", " + value2 + "\n";
+        }
+        else if (type.equals("FLOAT")){
+            buffer += "%" + reg + " = fcmp olt double " + value1 + ", " + value2 + "\n";
+        }
+        reg++;
+    }
+    static void moreeq2(String type){
+        if (type.equals("INTEGER")) {
+            buffer += "%" + reg + " = icmp sge i32 %" + (reg - 2) + ", %" + (reg - 1) + "\n";
+        }
+        else if (type.equals("FLOAT")){
+            buffer += "%" + reg + " = fcmp oge double %" + (reg - 2) + ", %" + (reg - 1) + "\n";
+        }
+        reg++;
+    }
+    static void moreeq1_1(String value, String type){
+        if (type.equals("INTEGER")) {
+            buffer += "%" + reg + " = icmp sge i32 %" + (reg - 1) + ", " + value + "\n";
+        }
+        else if (type.equals("FLOAT")){
+            buffer += "%" + reg + " = fcmp oge double %" + (reg - 1) + ", " + value + "\n";
+        }
+        reg++;
+    }
+
+    static void moreeq1_2(String value, String type){
+        if (type.equals("INTEGER")) {
+            buffer += "%" + reg + " = icmp sge i32 " + value + ", %" + (reg-1) + "\n";
+        }
+        else if (type.equals("FLOAT")){
+            buffer += "%" + reg + " = fcmp oge double " + value + ", %" + (reg-1) + "\n";
+        }
+        reg++;
+    }
+
+    static void moreeq0(String value1, String value2, String type) {
+        if (type.equals("INTEGER")) {
+            buffer += "%" + reg + " = icmp sge i32 " + value1 + ", " + value2 + "\n";
+        }
+        else if (type.equals("FLOAT")){
+            buffer += "%" + reg + " = fcmp oge double " + value1 + ", " + value2 + "\n";
+        }
+        reg++;
+    }
+    static void lesseq2(String type){
+        if (type.equals("INTEGER")) {
+            buffer += "%" + reg + " = icmp sle i32 %" + (reg - 2) + ", %" + (reg - 1) + "\n";
+        }
+        else if (type.equals("FLOAT")){
+            buffer += "%" + reg + " = fcmp ole double %" + (reg - 2) + ", %" + (reg - 1) + "\n";
+        }
+        reg++;
+    }
+    static void lesseq1_1(String value, String type){
+        if (type.equals("INTEGER")) {
+            buffer += "%" + reg + " = icmp sle i32 %" + (reg - 1) + ", " + value + "\n";
+        }
+        else if (type.equals("FLOAT")){
+            buffer += "%" + reg + " = fcmp ole double %" + (reg - 1) + ", " + value + "\n";
+        }
+        reg++;
+    }
+
+    static void lesseq1_2(String value, String type){
+        if (type.equals("INTEGER")) {
+            buffer += "%" + reg + " = icmp sle i32 " + value + ", %" + (reg-1) + "\n";
+        }
+        else if (type.equals("FLOAT")){
+            buffer += "%" + reg + " = fcmp ole double " + value + ", %" + (reg-1) + "\n";
+        }
+        reg++;
+    }
+
+    static void lesseq0(String value1, String value2, String type) {
+        if (type.equals("INTEGER")) {
+            buffer += "%" + reg + " = icmp sle i32 " + value1 + ", " + value2 + "\n";
+        }
+        else if (type.equals("FLOAT")){
+            buffer += "%" + reg + " = fcmp ole double " + value1 + ", " + value2 + "\n";
+        }
+        reg++;
+    }
+
+    static void or(Integer val1, Integer val2) {
+        buffer += "%" + reg + " = or i1 %" + val1 + ", %" + val2 + "\n";
+        reg++;
+    }
+
+    static void and(Integer val1, Integer val2) {
+        buffer += "%" + reg + " = and i1 %" + val1 + ", %" + val2 + "\n";
         reg++;
     }
 
@@ -292,8 +506,8 @@ public class GLLVM  {
         br_stack.push(br);
     }
 
-    static void while_condition(String value) {
-        buffer += "br i1 " + value + ", label %true" + br + ", label %false" + br + "\n";
+    static void while_condition(String val) {
+        buffer += "br i1 " + val +", label %true" + br + ", label %false" + br + "\n";
         buffer += "true" + br + ":\n";
         br_stack.push(br);
     }
