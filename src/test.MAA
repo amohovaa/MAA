@@ -3,14 +3,7 @@ VAR int squ = 20;
 
 BEGIN
     x := x + squ;
-    IF x < 10 THEN
-     BEGIN
-         x := x + 1;
-         squ := squ * 10;
-     END;
-    IF x != 10 THEN
-      BEGIN
-        squ := squ * 100;
-        WRITE (squ);
-      END;
+    squ := squ / 2;
+    WRITE(x);
+    WRITE(squ);
 END.
