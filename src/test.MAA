@@ -1,13 +1,15 @@
-VAR float x = 1.0;
-VAR float squ = 2.0;
+VAR int x = 10;
+VAR int squ = 20;
 
 BEGIN
-   x := 14.0 / squ;
-    WHILE x != 9.0 DO
+    IF x < 10 THEN
      BEGIN
          x := x + 1;
          squ := squ * 10;
      END;
-    WRITE (x);
-    WRITE (squ);
+    IF x = 10 THEN
+      BEGIN
+        squ := squ * 100;
+        WRITE (squ);
+      END;
 END.

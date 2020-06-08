@@ -100,7 +100,6 @@ public class MyVisitor extends MAABaseVisitor<Object> {
 
     @Override
     public Object visitConditionunion(MAAParser.ConditionunionContext ctx) {
-
         for (int i = 0; i < ctx.condition().size(); i++) {
             Object result = visitChildren(ctx);
             if (result == null) {
